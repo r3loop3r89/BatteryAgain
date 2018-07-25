@@ -23,9 +23,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
+import com.shra1.batteryagain.MainActivity;
 import com.shra1.batteryagain.R;
 import com.shra1.batteryagain.customviews.ShraTextView;
 import com.shra1.batteryagain.utils.DirectionsJSONParser;
+import com.shra1.batteryagain.utils.LongLog;
+import com.shra1.batteryagain.utils.MyProgressDialog;
 
 import org.json.JSONObject;
 
@@ -129,10 +134,36 @@ public class MapFragment extends Fragment {
                 // Getting URL to the Google Directions API
                 String url = getDirectionsUrl(origin, dest);
 
-                DownloadTask downloadTask = new DownloadTask();
+                /*DownloadTask downloadTask = new DownloadTask();
 
                 // Start downloading json data from Google Directions API
-                downloadTask.execute(url);
+                downloadTask.execute(url);*/
+
+                MyProgressDialog.show(mCtx, "Please wait, getting direction data", false);
+                Ion.with(mCtx)
+                        .load(url)
+                        .asString()
+                        .setCallback(new FutureCallback<String>() {
+                            @Override
+                            public void onCompleted(Exception e, String result) {
+                                MyProgressDialog.dismiss();
+                                if (e != null) {
+                                    e.printStackTrace();
+                                    return;
+                                }
+
+                                LongLog.d(TAG, result);
+                                if (result.toLowerCase().contains("error")){
+                                    if (MainActivity.getInstance()!=null){
+                                        MainActivity.getInstance().showToast("Quota exeeded!");
+                                    }
+                                    return;
+                                }
+
+                                ParserTask parserTask = new ParserTask();
+                                parserTask.execute(result);
+                            }
+                        });
             }
         });
     }
@@ -150,7 +181,7 @@ public class MapFragment extends Fragment {
         String mode = "mode=driving";
         String key = "AIzaSyAjLWtECbFLfPX1alKlEBSQsOMcRT2cN4g";
         // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode+ "&" + key;
+        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode + "&" + key;
 
         // Output format
         String output = "json";
@@ -243,7 +274,6 @@ public class MapFragment extends Fragment {
             try {
                 jObject = new JSONObject(jsonData[0]);
                 DirectionsJSONParser parser = new DirectionsJSONParser();
-
                 routes = parser.parse(jObject);
             } catch (Exception e) {
                 e.printStackTrace();

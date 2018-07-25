@@ -18,15 +18,34 @@ import com.shra1.batteryagain.fragments.MapFragment;
 import com.shra1.batteryagain.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
+    private static MainActivity INSTANCE = null;
     FrameLayout flMAFrame;
     TabLayout tlTabLayout;
     private Toolbar tbToolbar;
     private ShraTextView stvToolbarTitle;
 
+    public static MainActivity getInstance() {
+        return INSTANCE;
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        INSTANCE = null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        INSTANCE = this;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        INSTANCE = this;
 
         initViews();
 
@@ -63,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
 
         changeFragment(HomeFragment.getInstance(), true);
     }
-
 
     private void setupTabs() {
         final TabLayout.Tab HomeTab = tlTabLayout.newTab();
@@ -120,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showToast(String text) {
+    public void showToast(String text) {
         Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
     }
 
@@ -130,6 +148,4 @@ public class MainActivity extends AppCompatActivity {
         flMAFrame = findViewById(R.id.flMAFrame);
         tlTabLayout = findViewById(R.id.tlTabLayout);
     }
-
-
 }
