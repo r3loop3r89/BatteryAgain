@@ -41,6 +41,7 @@ import java.util.List;
 
 public class MapFragment extends Fragment {
 
+    public static final String TAG = "ShraX";
     private static MapFragment INSTANCE = null;
     SupportMapFragment map;
     GoogleMap mGoogleMap;
@@ -80,7 +81,6 @@ public class MapFragment extends Fragment {
         return v;
     }
 
-
     @SuppressLint("MissingPermission")
     private void displayMyLocationDetail() {
         LocationManager lm = (LocationManager) mCtx.getSystemService(Context.LOCATION_SERVICE);
@@ -110,7 +110,6 @@ public class MapFragment extends Fragment {
         }, Looper.getMainLooper());
     }
 
-
     @SuppressLint("MissingPermission")
     private void configureTheGoogleMap() {
         mGoogleMap.setMyLocationEnabled(true);
@@ -138,7 +137,6 @@ public class MapFragment extends Fragment {
         });
     }
 
-
     private String getDirectionsUrl(LatLng origin, LatLng dest) {
 
         // Origin of route
@@ -150,8 +148,9 @@ public class MapFragment extends Fragment {
         // Sensor enabled
         String sensor = "sensor=false";
         String mode = "mode=driving";
+        String key = "AIzaSyAjLWtECbFLfPX1alKlEBSQsOMcRT2cN4g";
         // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
+        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode+ "&" + key;
 
         // Output format
         String output = "json";
@@ -161,6 +160,44 @@ public class MapFragment extends Fragment {
 
 
         return url;
+    }
+
+    /**
+     * A method to download json data from url
+     */
+    private String downloadUrl(String strUrl) throws IOException {
+        String data = "";
+        InputStream iStream = null;
+        HttpURLConnection urlConnection = null;
+        try {
+            URL url = new URL(strUrl);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
+
+            urlConnection.connect();
+
+            iStream = urlConnection.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
+
+            StringBuffer sb = new StringBuffer();
+
+            String line = "";
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            data = sb.toString();
+
+            br.close();
+
+        } catch (Exception e) {
+            Log.d("Exception", e.toString());
+        } finally {
+            iStream.close();
+            urlConnection.disconnect();
+        }
+        return data;
     }
 
     private class DownloadTask extends AsyncTask<String, Void, String> {
@@ -175,6 +212,7 @@ public class MapFragment extends Fragment {
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());
             }
+            Log.d(TAG, "DaTa: " + data);
             return data;
         }
 
@@ -243,46 +281,10 @@ public class MapFragment extends Fragment {
             }
 
             // Drawing polyline in the Google Map for the i-th route
-            mGoogleMap.addPolyline(lineOptions);
-        }
-    }
-
-    /**
-     * A method to download json data from url
-     */
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(strUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            urlConnection.connect();
-
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
+            if (lineOptions != null) {
+                mGoogleMap.addPolyline(lineOptions);
             }
-
-            data = sb.toString();
-
-            br.close();
-
-        } catch (Exception e) {
-            Log.d("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
         }
-        return data;
     }
 
 }
