@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.shra1.batteryagain">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -28,6 +29,14 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <service android:name=".services.BgService" />
+
+        <receiver android:name=".recievers.ServiceRetainerReciever">
+            <intent-filter>
+                <action android:name="UNKILLABLE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

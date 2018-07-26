@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="5dp"
+    android:paddingTop="5dp"
+    android:weightSum="4">
+
+    <com.shra1.batteryagain.customviews.ShraTextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:lines="1"
+        android:maxLines="1"
+        android:text="Sr No"
+        android:textStyle="bold" />
+
+    <com.shra1.batteryagain.customviews.ShraTextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.5"
+        android:lines="1"
+        android:maxLines="1"
+        android:text="EntryTime"
+        android:textStyle="bold" />
+
+    <com.shra1.batteryagain.customviews.ShraTextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:lines="1"
+        android:maxLines="1"
+        android:text="BatteryLevel"
+        android:textStyle="bold" />
+
+    <com.shra1.batteryagain.customviews.ShraTextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:lines="1"
+        android:maxLines="1"
+        android:text="EntryDifference"
+        android:textStyle="bold" />
+
+</LinearLayout>

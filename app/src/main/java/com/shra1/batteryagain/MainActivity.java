@@ -13,6 +13,7 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.shra1.batteryagain.customviews.ShraTextView;
+import com.shra1.batteryagain.fragments.DataDetailsFragment;
 import com.shra1.batteryagain.fragments.HomeFragment;
 import com.shra1.batteryagain.fragments.MapFragment;
 import com.shra1.batteryagain.fragments.SettingsFragment;
@@ -93,10 +94,14 @@ public class MainActivity extends AppCompatActivity {
         final TabLayout.Tab MapTab = tlTabLayout.newTab();
         MapTab.setText("Map");
 
+        final TabLayout.Tab DataDetailsTab = tlTabLayout.newTab();
+        DataDetailsTab.setText("Data Details");
+
 
         tlTabLayout.addTab(HomeTab);
+        tlTabLayout.addTab(DataDetailsTab);
         tlTabLayout.addTab(SettingsTab);
-        tlTabLayout.addTab(MapTab);
+        //tlTabLayout.addTab(MapTab);
 
 
         tlTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -108,6 +113,8 @@ public class MainActivity extends AppCompatActivity {
                     changeFragment(SettingsFragment.getInstance(), true);
                 } else if (tab == MapTab) {
                     changeFragment(MapFragment.getInstance(), true);
+                } else if (tab == DataDetailsTab) {
+                    changeFragment(DataDetailsFragment.getInstance(), true);
                 }
             }
 
@@ -145,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
         tbToolbar = (Toolbar) findViewById(R.id.tbToolbar);
         stvToolbarTitle = (ShraTextView) findViewById(R.id.stvToolbarTitle);
-        flMAFrame = findViewById(R.id.flMAFrame);
-        tlTabLayout = findViewById(R.id.tlTabLayout);
+        flMAFrame = (FrameLayout) findViewById(R.id.flMAFrame);
+        tlTabLayout = (TabLayout) findViewById(R.id.tlTabLayout);
     }
 }

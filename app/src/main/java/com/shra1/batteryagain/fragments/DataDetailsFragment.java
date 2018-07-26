@@ -1,48 +1,39 @@
 package com.shra1.batteryagain.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.ListView;
 
 import com.shra1.batteryagain.R;
+import com.shra1.batteryagain.adapters.BatteryDetailsListAdapter;
 import com.shra1.batteryagain.customviews.ShraTextView;
 import com.shra1.batteryagain.dtos.BatteryEntry;
 import com.shra1.batteryagain.room.MRoom;
-import com.shra1.batteryagain.services.BgService;
-import com.shra1.batteryagain.utils.Utils;
 
-import org.eazegraph.lib.charts.ValueLineChart;
-import org.eazegraph.lib.models.ValueLinePoint;
-import org.eazegraph.lib.models.ValueLineSeries;
 import org.joda.time.DateTime;
 
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class DataDetailsFragment extends Fragment {
 
-    private static HomeFragment INSTANCE = null;
-    LinearLayout llHomeFragment;
+    private static DataDetailsFragment INSTANCE = null;
+    ListView lvDataDetailsList;
     Context mCtx;
-
     DateTime dateTime;
-    ValueLineChart lineChart;
     private ImageButton ibDSLLeft;
     private ShraTextView stvDSLDate;
     private ImageButton ibDSLRight;
 
-    public static HomeFragment getInstance() {
+    public static DataDetailsFragment getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new HomeFragment();
+            INSTANCE = new DataDetailsFragment();
         }
         return INSTANCE;
     }
@@ -51,10 +42,12 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mCtx = container.getContext();
-        View v = inflater.inflate(R.layout.home_fragment, container, false);
+        View v = inflater.inflate(R.layout.data_detail_fragment, container, false);
+
         initViews(v);
 
         dateTime = new DateTime();
+
         setDateNLoadData();
 
         ibDSLLeft.setOnClickListener(ib -> {
@@ -66,7 +59,6 @@ public class HomeFragment extends Fragment {
             dateTime = dateTime.plusDays(1);
             setDateNLoadData();
         });
-
         stvDSLDate.setOnClickListener(stv -> {
             dateTime = new DateTime();
             setDateNLoadData();
@@ -86,42 +78,20 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onComplete(List<BatteryEntry> allBatteryEntries) {
-                ValueLineSeries series= new ValueLineSeries();
-                for (BatteryEntry e:
-                     ) {
 
-                }
-                DateTime lable = new DateTime()
-                series.addPoint(new ValueLinePoint());
+                BatteryDetailsListAdapter adapter
+                        = new BatteryDetailsListAdapter(mCtx, allBatteryEntries);
+                lvDataDetailsList.setAdapter(adapter);
 
-                lineChart.addSeries();
             }
         }, dateTime);
     }
 
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (Utils.isMyServiceRunning(mCtx, BgService.class)) {
-        } else {
-            Snackbar.make(
-                    getActivity().findViewById(R.id.llHomeFragment)
-                    , "Service is not running", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Run", v1 -> {
-                        Intent i = new Intent(mCtx, BgService.class);
-                        mCtx.startService(i);
-                        Toast.makeText(mCtx, "Service running", Toast.LENGTH_SHORT).show();
-                    }).show();
-        }
-    }
-
     private void initViews(View v) {
-        llHomeFragment = (LinearLayout) getActivity().getWindow().getDecorView().findViewById(R.id.llHomeFragment);
-
+        lvDataDetailsList = (ListView) v.findViewById(R.id.lvDataDetailsList);
         ibDSLLeft = (ImageButton) v.findViewById(R.id.ibDSLLeft);
         stvDSLDate = (ShraTextView) v.findViewById(R.id.stvDSLDate);
         ibDSLRight = (ImageButton) v.findViewById(R.id.ibDSLRight);
-        lineChart = (ValueLineChart) v.findViewById(R.id.lineChart);
+
     }
 }

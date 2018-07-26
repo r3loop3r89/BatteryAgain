@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -54,6 +55,8 @@ public class MapFragment extends Fragment {
     Context mCtx;
     Location myCurrentLocation;
 
+    boolean locationReady=false, mapReady=false;
+
     public static MapFragment getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new MapFragment();
@@ -68,12 +71,15 @@ public class MapFragment extends Fragment {
         View v = inflater.inflate(R.layout.map_fragment, container, false);
 
         map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        stvDetails = v.findViewById(R.id.stvDetails);
+        stvDetails = (ShraTextView) v.findViewById(R.id.stvDetails);
 
         map.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 mGoogleMap = googleMap;
+
+                mapReady=true;
+                goToMyLocationOnMap();
 
                 displayMyLocationDetail();
 
@@ -92,10 +98,13 @@ public class MapFragment extends Fragment {
         lm.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
+                locationReady=true;
                 myCurrentLocation = location;
                 String detail = "My current location is (" + location.getLatitude() + ", " + location.getLongitude() + ")";
-
                 stvDetails.setText(detail);
+
+                goToMyLocationOnMap();
+
             }
 
             @Override
@@ -113,6 +122,12 @@ public class MapFragment extends Fragment {
 
             }
         }, Looper.getMainLooper());
+    }
+
+    private void goToMyLocationOnMap() {
+        if (locationReady && mapReady){
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(myCurrentLocation.getLatitude(), myCurrentLocation.getLongitude()), 15));
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -181,7 +196,7 @@ public class MapFragment extends Fragment {
         String mode = "mode=driving";
         String key = "AIzaSyAjLWtECbFLfPX1alKlEBSQsOMcRT2cN4g";
         // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode + "&" + key;
+        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;// + "&" + key;
 
         // Output format
         String output = "json";
