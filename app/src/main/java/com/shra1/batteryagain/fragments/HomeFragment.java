@@ -2,6 +2,7 @@ package com.shra1.batteryagain.fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +15,11 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.androidplot.xy.CatmullRomInterpolator;
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYSeries;
 import com.shra1.batteryagain.R;
 import com.shra1.batteryagain.customviews.ShraTextView;
 import com.shra1.batteryagain.dtos.BatteryEntry;
@@ -21,11 +27,9 @@ import com.shra1.batteryagain.room.MRoom;
 import com.shra1.batteryagain.services.BgService;
 import com.shra1.batteryagain.utils.Utils;
 
-import org.eazegraph.lib.charts.ValueLineChart;
-import org.eazegraph.lib.models.ValueLinePoint;
-import org.eazegraph.lib.models.ValueLineSeries;
 import org.joda.time.DateTime;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -35,10 +39,12 @@ public class HomeFragment extends Fragment {
     Context mCtx;
 
     DateTime dateTime;
-    ValueLineChart lineChart;
+
     private ImageButton ibDSLLeft;
     private ShraTextView stvDSLDate;
     private ImageButton ibDSLRight;
+    private XYPlot plot;
+
 
     public static HomeFragment getInstance() {
         if (INSTANCE == null) {
@@ -86,15 +92,21 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onComplete(List<BatteryEntry> allBatteryEntries) {
-                ValueLineSeries series= new ValueLineSeries();
-                for (BatteryEntry e:
-                     ) {
-
+                Number[] a = new Number[allBatteryEntries.size()];
+                int i = 0;
+                for (BatteryEntry e : allBatteryEntries) {
+                    a[i] = e.getBatteryLevel();
+                    i++;
                 }
-                DateTime lable = new DateTime()
-                series.addPoint(new ValueLinePoint());
+                LineAndPointFormatter series1Format =
+                        new LineAndPointFormatter(mCtx, R.xml.line_point_formatter_with_labels);
+                /*LineAndPointFormatter series1Format = new LineAndPointFormatter(Color.RED, Color.GREEN, Color.BLUE, null);*/
+                /*series1Format.setInterpolationParams(
+                        new CatmullRomInterpolator.Params(10, CatmullRomInterpolator.Type.Centripetal));*/
+                XYSeries xySeries = new SimpleXYSeries(Arrays.asList(a), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Battery");
+                plot.addSeries(xySeries, series1Format);
+                plot.redraw();
 
-                lineChart.addSeries();
             }
         }, dateTime);
     }
@@ -122,6 +134,7 @@ public class HomeFragment extends Fragment {
         ibDSLLeft = (ImageButton) v.findViewById(R.id.ibDSLLeft);
         stvDSLDate = (ShraTextView) v.findViewById(R.id.stvDSLDate);
         ibDSLRight = (ImageButton) v.findViewById(R.id.ibDSLRight);
-        lineChart = (ValueLineChart) v.findViewById(R.id.lineChart);
+        plot = (XYPlot) v.findViewById(R.id.plot);
+
     }
 }
